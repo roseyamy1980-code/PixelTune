@@ -1,3 +1,4 @@
+
 name: Build Pixel 6 Sensi Lab APK
 
 on:
@@ -8,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,15 +19,21 @@ jobs:
           java-version: "17"
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
 
       - name: Extract project
         run: unzip -o pixel6_sensi_android_apk_project.zip -d pixel6-project
 
+      - name: Fix project structure
+        run: |
+          mv pixel6-project/app/settings.gradle pixel6-project/settings.gradle
+
       - name: Build APK
-        run: gradle --no-daemon -p pixel6-project/pixel6_sensi_android assembleDebug
+        run: gradle --no-daemon -p pixel6-project assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
           name: Pixel6-Sensi-Lab-APK
-          path: pixel6-project/pixel6_sensi_android/app/build/outputs/apk/debug/app-debug.apk
+          path: pixel6-project/app/build/outputs/apk/debug/app-debug.apk
           
